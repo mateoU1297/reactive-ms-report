@@ -13,6 +13,14 @@ java {
 	}
 }
 
+repositories {
+	mavenCentral()
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
