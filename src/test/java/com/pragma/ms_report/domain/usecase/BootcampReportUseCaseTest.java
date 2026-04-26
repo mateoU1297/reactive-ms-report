@@ -2,14 +2,17 @@ package com.pragma.ms_report.domain.usecase;
 
 import com.pragma.ms_report.domain.model.BootcampReport;
 import com.pragma.ms_report.domain.model.CapacityReport;
+import com.pragma.ms_report.domain.model.PersonInfo;
 import com.pragma.ms_report.domain.model.TechnologyReport;
 import com.pragma.ms_report.domain.spi.IBootcampReportPersistencePort;
+import com.pragma.ms_report.domain.spi.IPersonClientPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -25,6 +28,9 @@ class BootcampReportUseCaseTest {
 
     @Mock
     private IBootcampReportPersistencePort bootcampReportPersistencePort;
+
+    @Mock
+    private IPersonClientPort personClientPort;
 
     @InjectMocks
     private BootcampReportUseCase bootcampReportUseCase;
@@ -46,7 +52,7 @@ class BootcampReportUseCaseTest {
         bootcampReport = new BootcampReport(
                 null, 1L, "Java Bootcamp", "Description",
                 LocalDate.of(2026, 6, 1), 3,
-                null, null, null, capacities, null
+                1, 2, 3, capacities, LocalDateTime.now()
         );
     }
 
@@ -193,6 +199,47 @@ class BootcampReportUseCaseTest {
 
         StepVerifier.create(bootcampReportUseCase.incrementPersonCount(1L))
                 .expectNextMatches(r -> r.getPersonCount().equals(5))
+                .verifyComplete();
+    }
+
+    @Test
+    void findMostPopular_success() {
+        List<PersonInfo> persons = List.of(
+                new PersonInfo(1L, "John", "john@example.com"),
+                new PersonInfo(2L, "Jane", "jane@example.com")
+        );
+
+        when(bootcampReportPersistencePort.findTopByOrderByPersonCountDesc()).thenReturn(Mono.just(bootcampReport));
+        when(personClientPort.findEnrolledPersonsByBootcampId(1L)).thenReturn(Flux.fromIterable(persons));
+
+        StepVerifier.create(bootcampReportUseCase.findMostPopular())
+                .expectNextMatches(detail ->
+                        detail.getBootcampName().equals("Java Bootcamp") &&
+                                detail.getPersons().size() == 2 &&
+                                detail.getPersonCount() == 3
+                )
+                .verifyComplete();
+    }
+
+    @Test
+    void findMostPopular_noReports_completesEmpty() {
+        when(bootcampReportPersistencePort.findTopByOrderByPersonCountDesc())
+                .thenReturn(Mono.empty());
+
+        StepVerifier.create(bootcampReportUseCase.findMostPopular())
+                .verifyComplete();
+    }
+
+    @Test
+    void findMostPopular_personsListEmptyWhenNoEnrollments() {
+        when(bootcampReportPersistencePort.findTopByOrderByPersonCountDesc()).thenReturn(Mono.just(bootcampReport));
+        when(personClientPort.findEnrolledPersonsByBootcampId(1L)).thenReturn(Flux.empty());
+
+        StepVerifier.create(bootcampReportUseCase.findMostPopular())
+                .expectNextMatches(detail ->
+                        detail.getPersons() != null &&
+                                detail.getPersons().isEmpty()
+                )
                 .verifyComplete();
     }
 }

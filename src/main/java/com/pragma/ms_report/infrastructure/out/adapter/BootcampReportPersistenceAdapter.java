@@ -24,4 +24,10 @@ public class BootcampReportPersistenceAdapter implements IBootcampReportPersiste
         return bootcampReportRepository.findByBootcampId(bootcampId)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public Mono<BootcampReport> findTopByOrderByPersonCountDesc() {
+        return bootcampReportRepository.findTopByOrderByPersonCountDesc()
+                .map(mapper::toDomain);
+    }
 }
