@@ -7,4 +7,6 @@ public interface IBootcampReportPersistencePort {
     Mono<BootcampReport> save(BootcampReport bootcampReport);
 
     Mono<BootcampReport> findByBootcampId(Long bootcampId);
+
+    Mono<BootcampReport> findTopByOrderByPersonCountDesc();
 }

@@ -1,5 +1,6 @@
 package com.pragma.ms_report.infrastructure.input.rest;
 
+import com.pragma.ms_report.application.dto.BootcampReportDetailResponse;
 import com.pragma.ms_report.application.dto.BootcampReportRequest;
 import com.pragma.ms_report.application.dto.BootcampReportResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,12 +72,35 @@ public class BootcampReportRouter {
                                             description = "Bootcamp report not found")
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/reports/bootcamps/most-popular",
+                    method = RequestMethod.GET,
+                    beanClass = BootcampReportRestHandler.class,
+                    beanMethod = "findMostPopular",
+                    operation = @Operation(
+                            operationId = "findMostPopularBootcamp",
+                            summary = "Find bootcamp with most enrolled persons",
+                            tags = {"Report"},
+                            parameters = {},
+                            responses = {
+                                    @ApiResponse(responseCode = "200",
+                                            content = @Content(
+                                                    schema = @Schema(
+                                                            implementation = BootcampReportDetailResponse.class
+                                                    )
+                                            )),
+                                    @ApiResponse(responseCode = "404",
+                                            description = "No reports found")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> bootcampReportRoutes(BootcampReportRestHandler handler) {
         return RouterFunctions.route()
                 .POST("/api/v1/reports/bootcamps", handler::save)
                 .PATCH("/api/v1/reports/bootcamps/{bootcampId}/persons", handler::incrementPersonCount)
+                .GET("/api/v1/reports/bootcamps/most-popular", handler::findMostPopular)
                 .build();
     }
 }

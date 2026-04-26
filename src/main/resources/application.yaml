@@ -9,6 +9,10 @@ spring:
       uri: mongodb://localhost:27017/report_db
       database: report_db
 
+clients:
+  person:
+    url: http://localhost:8083
+
 springdoc:
   api-docs:
     path: /v3/api-docs

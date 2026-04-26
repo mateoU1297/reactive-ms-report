@@ -28,4 +28,9 @@ public class BootcampReportRestHandler {
         return bootcampReportHandler.incrementPersonCount(bootcampId)
                 .flatMap(response -> ServerResponse.ok().bodyValue(response));
     }
+
+    public Mono<ServerResponse> findMostPopular(ServerRequest request) {
+        return bootcampReportHandler.findMostPopular()
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
 }

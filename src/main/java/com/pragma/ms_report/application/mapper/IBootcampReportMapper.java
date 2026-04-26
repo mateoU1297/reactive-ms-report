@@ -1,8 +1,10 @@
 package com.pragma.ms_report.application.mapper;
 
+import com.pragma.ms_report.application.dto.BootcampReportDetailResponse;
 import com.pragma.ms_report.application.dto.BootcampReportRequest;
 import com.pragma.ms_report.application.dto.BootcampReportResponse;
 import com.pragma.ms_report.domain.model.BootcampReport;
+import com.pragma.ms_report.domain.model.BootcampReportDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -11,4 +13,5 @@ import org.mapstruct.ReportingPolicy;
 public interface IBootcampReportMapper {
     BootcampReport toDomain(BootcampReportRequest request);
     BootcampReportResponse toResponse(BootcampReport report);
+    BootcampReportDetailResponse toDetailResponse(BootcampReportDetail detail);
 }

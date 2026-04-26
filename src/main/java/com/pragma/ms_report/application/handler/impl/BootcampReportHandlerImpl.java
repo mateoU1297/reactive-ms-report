@@ -1,5 +1,6 @@
 package com.pragma.ms_report.application.handler.impl;
 
+import com.pragma.ms_report.application.dto.BootcampReportDetailResponse;
 import com.pragma.ms_report.application.dto.BootcampReportRequest;
 import com.pragma.ms_report.application.dto.BootcampReportResponse;
 import com.pragma.ms_report.application.handler.IBootcampReportHandler;
@@ -26,5 +27,11 @@ public class BootcampReportHandlerImpl implements IBootcampReportHandler {
     public Mono<BootcampReportResponse> incrementPersonCount(Long bootcampId) {
         return bootcampReportServicePort.incrementPersonCount(bootcampId)
                 .map(bootcampReportMapper::toResponse);
+    }
+
+    @Override
+    public Mono<BootcampReportDetailResponse> findMostPopular() {
+        return bootcampReportServicePort.findMostPopular()
+                .map(bootcampReportMapper::toDetailResponse);
     }
 }
